@@ -1,3 +1,146 @@
-[gd_scene format=3 uid="uid://be714x1wlj77r"]
+[gd_scene load_steps=11 format=3 uid="uid://be714x1wlj77r"]
+
+[ext_resource type="Texture2D" uid="uid://bn5bdxp0qykk1" path="res://AnimationSheet_Character.png" id="1_mit7b"]
+[ext_resource type="Script" path="res://player.gd" id="1_nhyuu"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v44te"]
+radius = 7.0
+
+[sub_resource type="Animation" id="Animation_a1dyp"]
+resource_name = "idle"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Player/Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+
+[sub_resource type="Animation" id="Animation_2nqoo"]
+resource_name = "walk"
+length = 1.9
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Player/Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [16, 17, 18, 19]
+}
+
+[sub_resource type="Animation" id="Animation_xv3ub"]
+resource_name = "sit down"
+length = 1e+07
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Player/Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.5, 1.9, 2, 2.5, 2.86667, 14.3667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [32, 33, 34, 35, 35, 35, 35, 35, 35]
+}
+
+[sub_resource type="Animation" id="Animation_dqarm"]
+resource_name = "fade away"
+length = 1.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Player/Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [48, 49, 50]
+}
+
+[sub_resource type="Animation" id="Animation_qbwb6"]
+resource_name = "afk"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Player/Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [8, 9]
+}
+
+[sub_resource type="Animation" id="Animation_4pnnx"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Player/Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_e4lfd"]
+_data = {
+"RESET": SubResource("Animation_4pnnx"),
+"afk": SubResource("Animation_qbwb6"),
+"fade away": SubResource("Animation_dqarm"),
+"idle": SubResource("Animation_a1dyp"),
+"sit down": SubResource("Animation_xv3ub"),
+"walk": SubResource("Animation_2nqoo")
+}
 
 [node name="Game" type="Node2D"]
+
+[node name="Main Player" type="Node2D" parent="."]
+position = Vector2(177, 94)
+metadata/_edit_group_ = true
+
+[node name="Player" type="CharacterBody2D" parent="Main Player"]
+script = ExtResource("1_nhyuu")
+
+[node name="Sprite2D" type="Sprite2D" parent="Main Player/Player"]
+texture_filter = 1
+texture = ExtResource("1_mit7b")
+hframes = 8
+vframes = 9
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Main Player/Player"]
+position = Vector2(-1, 1)
+shape = SubResource("CapsuleShape2D_v44te")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Main Player/Player"]
+root_node = NodePath("../..")
+libraries = {
+"": SubResource("AnimationLibrary_e4lfd")
+}
+autoplay = "idle"
+
+[node name="Camera2D" type="Camera2D" parent="Main Player/Player"]
+zoom = Vector2(2.5, 2.5)
+limit_smoothed = true
+position_smoothing_enabled = true
+rotation_smoothing_enabled = true
