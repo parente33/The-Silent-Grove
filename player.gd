@@ -7,8 +7,8 @@ extends CharacterBody2D
 ## Defines the players variables
 ## To be changed later on
 var health = 1
-var walk_speed = 2
-var up_and_down_speed = 2
+var walk_speed = 1
+var up_and_down_speed = 1
 
 ## Tracks inactivity
 var inactivity_timer = 0.0
@@ -23,44 +23,40 @@ func get_input(_delta):
 	var right = Input.is_action_pressed("right")
 	var up = Input.is_action_pressed("up")
 	var down = Input.is_action_pressed("down")
-	var horizontal_direction = Input.get_axis("left","right")
-	var vertical_direction = Input.get_axis("up","down")
-	
+
 	## Check if there's any input
 	if left or right or up or down:
-		inactivity_timer = 0.0  ## Reset inactivity timer
-		is_super_afk = false  ## Reset "super afk" status
+		inactivity_timer = 0.0 ## Reset inactivity timer
+		is_super_afk = false ## Reset "super afk" status
 
-		if left:
-			animation.play("walk")
-			position.x -= 1
-		elif right:
-			animation.play("walk")
-			position.x += horizontal_direction
-		elif up:
-			## Could be changed later
-			animation.play("walk")
-			position.y -= 1
-		elif down:
-			## Could be changed later
-			animation.play("walk")
-			position.y += vertical_direction
+	## Calculates movement direction through a vector, instead of a single direction
+	var movement = Vector2(
+		Input.get_axis("left", "right"),
+		Input.get_axis("up", "down")
+	)
+
+	## Normalizes the vector to ensure diagonal movement is not faster
+	if movement != Vector2.ZERO:
+		movement = movement.normalized()  ## Keeps the speed consistent for diagonal movement
+		animation.play("walk")
 	else:
 		if inactivity_timer >= AFK_TIME and inactivity_timer < SUPER_AFK_TIME:
 			animation.play("afk")
-		elif inactivity_timer >= SUPER_AFK_TIME:
+		elif inactivity_timer >= SUPER_AFK_TIME and not is_super_afk:
 			animation.play("sit down")
-			is_super_afk = true  ## Ensures "sit down" is played only once
+			is_super_afk = true ## Ensures "sit down" is played only once
 		else:
 			animation.play("idle")
-	
-	## Increment the inactivity timer
-	inactivity_timer += _delta
+
+	## Applies movement
+	position += movement * walk_speed
+	inactivity_timer += _delta ## Increment the inactivity timer
 
 ## Kills the player when it doesn't have any lives left
 func kills_player():
 	if health <= 0:
 		queue_free()
+		## Could be changed to a death scene I guess
 		get_tree().change_scene_to_file("res://start_menu.tscn")
 
 ## Switches the players sprite
@@ -68,7 +64,6 @@ func _physics_process(_delta):
 	get_input(_delta)
 	move_and_slide()
 	var horizontal_direction = Input.get_axis("left","right")
-	var _vertical_direction = Input.get_axis("up","down")
 	
 	if horizontal_direction != 0:
 		switch_direction(horizontal_direction)
