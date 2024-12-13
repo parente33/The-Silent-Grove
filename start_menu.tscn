@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dcb07wrcu3tn"]
+[gd_scene load_steps=3 format=3 uid="uid://cpfnnbh5qwcpy"]
 
 [ext_resource type="Script" path="res://start_menu.gd" id="1_wdp8x"]
-[ext_resource type="Texture2D" uid="uid://bthp3h0f5eg0x" path="res://Game Background.png" id="2_6n5sd"]
+[ext_resource type="Texture2D" uid="uid://do504c5ktflxv" path="res://Game Background.png" id="2_6n5sd"]
 
 [node name="Start Menu" type="Node2D"]
 script = ExtResource("1_wdp8x")

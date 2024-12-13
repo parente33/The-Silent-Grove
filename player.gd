@@ -3,6 +3,7 @@ extends CharacterBody2D
 @onready var sprite = $Sprite2D
 @onready var animation = $AnimationPlayer
 @onready var afk_timer = Timer.new()
+@onready var interaction_area = $Direction/ActionableFinder
 
 ## Defines the players variables
 ## To be changed later on
@@ -39,6 +40,7 @@ func get_input(_delta):
 	if movement != Vector2.ZERO:
 		movement = movement.normalized()  ## Keeps the speed consistent for diagonal movement
 		animation.play("walk")
+		update_interaction_area(movement) ## Rotates the ActionableFinder based on direction
 	else:
 		if inactivity_timer >= AFK_TIME and inactivity_timer < SUPER_AFK_TIME:
 			animation.play("afk")
@@ -47,10 +49,18 @@ func get_input(_delta):
 			is_super_afk = true ## Ensures "sit down" is played only once
 		else:
 			animation.play("idle")
+			interaction_area.rotation = 0 ## This part can't be in the update_interaction_area function
+			interaction_area.position = Vector2(-1, 1)
 
 	## Applies movement
 	position += movement * walk_speed
 	inactivity_timer += _delta ## Increment the inactivity timer
+	
+	if Input.is_action_just_pressed("interact"):
+		var actionables = interaction_area.get_overlapping_areas()
+		if actionables.size() > 0:
+			actionables[0].action()
+			return
 
 ## Kills the player when it doesn't have any lives left
 func kills_player():
@@ -68,6 +78,31 @@ func _physics_process(_delta):
 	if horizontal_direction != 0:
 		switch_direction(horizontal_direction)
 
+## Rotates the interaction area based on the player's direction
+func update_interaction_area(direction):
+	if direction.x > 0: ## Moving right
+		interaction_area.rotation = - PI / 2 ## -90 degrees
+		interaction_area.position = Vector2(-5, 2)
+	elif direction.x < 0: ## Moving left
+		interaction_area.rotation = PI / 2 ## 90 degrees
+		interaction_area.position = Vector2(3, 2)
+	elif direction.y > 0: ## Moving down
+		interaction_area.rotation = 0 ## Same as idle
+		interaction_area.position = Vector2(-1, 1)
+	elif direction.y < 0: ## Moving up
+		interaction_area.rotation = PI ## 180 degrees
+		interaction_area.position = Vector2(-1, 2)
+
 ## Flips the sprite, so not to use multiple ones
 func switch_direction(horizontal_direction):
 	sprite.flip_h = (horizontal_direction == -1)
+
+## ## Checks if the player colides with the Heartwood Tree
+## func _on_area_2d_body_entered(body):
+## 	if body == self:
+## 		print("Player entered the forbidden tree")
+## 
+## ## Checks if the player stops colliding with the Heartwood Tree
+## func _on_area_2d_body_exited(body):
+## 	if body == self:
+## 		print("Player left the forbidden tree")

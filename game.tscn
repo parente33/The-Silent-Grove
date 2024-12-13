@@ -1,13 +1,18 @@
-[gd_scene load_steps=28 format=3 uid="uid://be714x1wlj77r"]
+[gd_scene load_steps=32 format=3 uid="uid://c5ylh2njfnnot"]
 
-[ext_resource type="Texture2D" uid="uid://ere4jbancf5" path="res://Game Background2.png" id="1_fgtq0"]
-[ext_resource type="Texture2D" uid="uid://bn5bdxp0qykk1" path="res://AnimationSheet_Character.png" id="1_mit7b"]
+[ext_resource type="Texture2D" uid="uid://do504c5ktflxv" path="res://Game Background.png" id="1_2exfp"]
+[ext_resource type="Texture2D" uid="uid://bwoesqyia5v5y" path="res://AnimationSheet_Character.png" id="1_mit7b"]
 [ext_resource type="Script" path="res://player.gd" id="1_nhyuu"]
-[ext_resource type="Texture2D" uid="uid://blf33ilwjp0yu" path="res://Trees+.png" id="3_v6rmp"]
-[ext_resource type="Texture2D" uid="uid://bkbqs6hyjev6q" path="res://TX Tileset Stone Ground.png" id="5_enm65"]
-[ext_resource type="Texture2D" uid="uid://dch2j2u4xkkio" path="res://TX Props.png" id="6_3v51b"]
-[ext_resource type="Texture2D" uid="uid://g1pj4asotg76" path="res://Tileset-Terrain2.png" id="7_e3hou"]
-[ext_resource type="Texture2D" uid="uid://ce8awmdr24bog" path="res://Atlas-Props.png" id="8_cr422"]
+[ext_resource type="PackedScene" uid="uid://tjx3c4h11p3p" path="res://actionable.tscn" id="2_cgboi"]
+[ext_resource type="Resource" uid="uid://cive5rn7jk3gt" path="res://dialogue/dialogue.dialogue" id="3_v6q3m"]
+[ext_resource type="Texture2D" uid="uid://bkh312dhn484v" path="res://Trees+.png" id="3_v6rmp"]
+[ext_resource type="Texture2D" uid="uid://b44velcmpjqmy" path="res://TX Tileset Stone Ground.png" id="5_enm65"]
+[ext_resource type="Texture2D" uid="uid://c24qb7tl41a38" path="res://TX Props.png" id="6_3v51b"]
+[ext_resource type="Texture2D" uid="uid://bmdd2cp0qv83n" path="res://Tileset-Terrain2.png" id="7_e3hou"]
+[ext_resource type="Texture2D" uid="uid://eyi16nhmkdam" path="res://Atlas-Props.png" id="8_cr422"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kqdai"]
+size = Vector2(40, 22)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v44te"]
 radius = 7.0
@@ -118,6 +123,9 @@ _data = {
 "sit down": SubResource("Animation_xv3ub"),
 "walk": SubResource("Animation_2nqoo")
 }
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_isye8"]
+radius = 9.0
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_vo0pk"]
 tile_data = PackedInt32Array(0, 3014656, 10, 65536, 3014656, 11, 1, 3080192, 10, 65537, 3080192, 11)
@@ -548,13 +556,21 @@ offset_top = -5000.0
 offset_right = 5000.0
 offset_bottom = 5000.0
 mouse_filter = 2
-texture = ExtResource("1_fgtq0")
+texture = ExtResource("1_2exfp")
+
+[node name="Actionable" parent="TextureRect" instance=ExtResource("2_cgboi")]
+top_level = true
+dialogue_resource = ExtResource("3_v6q3m")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TextureRect/Actionable"]
+position = Vector2(150, -115)
+shape = SubResource("RectangleShape2D_kqdai")
 
 [node name="Main Player" type="Node2D" parent="."]
 position = Vector2(152, 96)
-metadata/_edit_group_ = true
 
 [node name="Player" type="CharacterBody2D" parent="Main Player"]
+position = Vector2(0, -2)
 script = ExtResource("1_nhyuu")
 
 [node name="Sprite2D" type="Sprite2D" parent="Main Player/Player"]
@@ -579,6 +595,16 @@ zoom = Vector2(2.5, 2.5)
 limit_smoothed = true
 position_smoothing_enabled = true
 rotation_smoothing_enabled = true
+
+[node name="Direction" type="Marker2D" parent="Main Player/Player"]
+
+[node name="ActionableFinder" type="Area2D" parent="Main Player/Player/Direction"]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Main Player/Player/Direction/ActionableFinder"]
+position = Vector2(0, 13)
+shape = SubResource("CircleShape2D_isye8")
 
 [node name="TileMap Árvores" type="TileMapLayer" parent="."]
 texture_filter = 1
