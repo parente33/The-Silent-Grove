@@ -1,7 +1,7 @@
 # The Silent Grove
 
 ## Description
-Descrição bastante genérica para um produto bastante mediocre
+Descrição bastante genérica para um produto bastante medíocre
 
 ## Licence
 This project is licensed under the MIT License.
